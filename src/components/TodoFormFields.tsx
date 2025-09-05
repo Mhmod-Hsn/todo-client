@@ -63,7 +63,7 @@ export const TodoFormFields: React.FC<TodoFormFieldsProps> = ({
         />
       </div>
 
-      <div className="flex items-center">
+      <div className="flex items-center mb-4">
         <input
           type="checkbox"
           id={completedId}
