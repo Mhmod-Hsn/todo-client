@@ -6,6 +6,7 @@ export const GET_TODOS = gql`
 			id
 			title
 			description
+			isCompleted
 			user {
 				id
 			}
@@ -19,6 +20,7 @@ export const GET_TODO = gql`
 			id
 			title
 			description
+			isCompleted
 			user {
 				id
 			}
@@ -29,8 +31,13 @@ export const GET_TODO = gql`
 export const CREATE_TODO = gql`
 	mutation CreateTodo($input: CreateTodoInput!) {
 		createTodo(input: $input) {
+			id
 			title
 			description
+			isCompleted
+			user {
+				id
+			}
 		}
 	}
 `;
@@ -38,8 +45,13 @@ export const CREATE_TODO = gql`
 export const UPDATE_TODO = gql`
 	mutation UpdateTodo($id: ID!, $input: UpdateTodoInput!) {
 		updateTodo(id: $id, input: $input) {
+			id
 			title
 			description
+			isCompleted
+			user {
+				id
+			}
 		}
 	}
 `;
