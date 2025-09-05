@@ -4,21 +4,18 @@ export interface User {
 }
 
 export interface Todo {
-  id: string;
-  title?: string;
-  description?: string;
-  isCompleted?: boolean;
-  user?: User;
+	id: string;
+	title?: string;
+	description?: string;
+	user?: User;
 }
 
 export interface CreateTodoInput {
-  title: string;
-  description?: string;
-  isCompleted?: boolean;
+	title: string;
+	description?: string;
 }
 
 export interface UpdateTodoInput {
-  title?: string;
-  description?: string;
-  isCompleted?: boolean;
+	title?: string;
+	description?: string;
 }

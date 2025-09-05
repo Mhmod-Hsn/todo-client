@@ -10,7 +10,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(todo.title || '');
   const [description, setDescription] = useState(todo.description || '');
-  const [isCompleted, setIsCompleted] = useState(todo.isCompleted || false);
 
   const updateTodo = useUpdateTodo();
   const deleteTodo = useDeleteTodo();
@@ -19,17 +18,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
   useEffect(() => {
     setTitle(todo.title || '');
     setDescription(todo.description || '');
-    setIsCompleted(todo.isCompleted || false);
-  }, [todo.title, todo.description, todo.isCompleted]);
-
-  const handleToggleComplete = () => {
-    updateTodo.mutate({
-      id: todo.id,
-      input: {
-        isCompleted: !todo.isCompleted
-      }
-    });
-  };
+  }, [todo.title, todo.description]);
 
   const handleUpdate = () => {
     updateTodo.mutate(
@@ -37,8 +26,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
         id: todo.id, 
         input: { 
           title: title.trim(),
-          description: description.trim() || undefined,
-          isCompleted
+          description: description.trim() || undefined
         }
       },
       {
@@ -58,7 +46,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
   const handleCancel = () => {
     setTitle(todo.title || '');
     setDescription(todo.description || '');
-    setIsCompleted(todo.isCompleted || false);
     setIsEditing(false);
   };
 
@@ -85,18 +72,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
               rows={3}
             />
           </div>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id={`edit-completed-${todo.id}`}
-              checked={isCompleted}
-              onChange={(e) => setIsCompleted(e.target.checked)}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-            />
-            <label htmlFor={`edit-completed-${todo.id}`} className="ml-2 text-sm text-gray-700">
-              Mark as completed
-            </label>
-          </div>
           <div className="flex gap-2">
             <button
               onClick={handleUpdate}
@@ -118,38 +93,18 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 ${
-      todo.isCompleted ? 'opacity-75' : ''
-    }`}>
+    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
       <div className="flex justify-between items-start">
-        <div className="flex items-start gap-3 flex-1">
-          <input
-            type="checkbox"
-            checked={todo.isCompleted || false}
-            onChange={handleToggleComplete}
-            className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-          />
-          <div className="flex-1">
-            <h3 className={`text-lg font-semibold mb-2 ${
-              todo.isCompleted 
-                ? 'line-through text-gray-500' 
-                : 'text-gray-900'
-            }`}>
-              {todo.title || 'Untitled'}
-            </h3>
-            {todo.description && (
-              <p className={`mb-3 ${
-                todo.isCompleted 
-                  ? 'line-through text-gray-400' 
-                  : 'text-gray-600'
-              }`}>
-                {todo.description}
-              </p>
-            )}
-            {todo.user && (
-              <p className="text-sm text-gray-500">User ID: {todo.user.id}</p>
-            )}
-          </div>
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            {todo.title || 'Untitled'}
+          </h3>
+          {todo.description && (
+            <p className="text-gray-600 mb-3">{todo.description}</p>
+          )}
+          {todo.user && (
+            <p className="text-sm text-gray-500">User ID: {todo.user.id}</p>
+          )}
         </div>
         <div className="flex gap-2 ml-4">
           <button

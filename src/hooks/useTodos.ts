@@ -10,7 +10,14 @@ export const useTodos = () => {
     queryFn: async () => {
       const data = await graphqlFetch(GET_TODOS);
       return data.todos;
-    },
+		},
+		select: (data) => {
+			return data
+				.sort((a, b) => Number(b.id) - Number(a.id))
+				.map((todo) => ({
+					...todo,
+				}));
+		},
   });
 };
 
@@ -24,9 +31,11 @@ export const useCreateTodo = () => {
       return data.createTodo;
     },
     onSuccess: () => {
-      // Invalidate and refetch todos
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
-    },
+			// wait 1 second before invalidating to ensure backend has processed the update
+			setTimeout(() => {
+				queryClient.invalidateQueries({ queryKey: ["todos"] });
+			}, 100);
+		},
   });
 };
 
@@ -34,14 +43,23 @@ export const useUpdateTodo = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ id, input }: { id: string; input: UpdateTodoInput }) => {
-      const data = await graphqlFetch(UPDATE_TODO, { id, input });
-      return data.updateTodo;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
-    },
-  });
+		mutationFn: async ({
+			id,
+			input,
+		}: {
+			id: string;
+			input: UpdateTodoInput;
+		}) => {
+			const data = await graphqlFetch(UPDATE_TODO, { id, input });
+			return data.updateTodo;
+		},
+		onSuccess: () => {
+			// wait 1 second before invalidating to ensure backend has processed the update
+			setTimeout(() => {
+				queryClient.invalidateQueries({ queryKey: ['todos'] });
+			}, 100);
+		},
+	});
 };
 
 export const useDeleteTodo = () => {

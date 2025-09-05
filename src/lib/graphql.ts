@@ -16,30 +16,49 @@ export const GRAPHQL_ENDPOINT = 'http://localhost:3000/graphql';
 export const graphqlFetch = async (query: DocumentNode | string, variables?: Record<string, unknown>) => {
   const queryString = typeof query === 'string' ? query : print(query);
   
-  const response = await fetch(GRAPHQL_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: queryString,
-      variables,
-    }),
-  });
+  console.log("🔍 GraphQL Request:", {
+		endpoint: GRAPHQL_ENDPOINT,
+		query: queryString,
+		variables,
+	});
 
-  console.log("🚀 ~ graphqlFetch ~ response:", response)
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
+	try {
+		const response = await fetch(GRAPHQL_ENDPOINT, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				query: queryString,
+				variables,
+			}),
+		});
 
-  const result = await response.json();
+		console.log(
+			"🚀 GraphQL Response Status:",
+			response.status,
+			response.statusText
+		);
 
-  if (result.errors) {
-    console.error('GraphQL Error Details:', result.errors);
-    console.error('Variables used:', variables);
-    console.error('Query used:', queryString);
-    throw new Error(result.errors[0].message);
-  }
+		if (!response.ok) {
+			const errorText = await response.text();
+			console.error("❌ HTTP Error Response:", errorText);
+			throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+		}
 
-  return result.data;
+		const result = await response.json();
+		console.log("✅ GraphQL Result:", result);
+
+		if (result.errors) {
+			console.error("❌ GraphQL Error Details:", result.errors);
+			console.error("Variables used:", variables);
+			console.error("Query used:", queryString);
+			throw new Error(result.errors[0].message);
+		}
+
+		return result.data;
+	} catch (error) {
+		console.error("💥 GraphQL Fetch Error:", error);
+		throw error;
+	}
 };
